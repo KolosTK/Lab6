@@ -20,7 +20,7 @@ class cencelBookingTest {
     }
 
     @Test
-    void cancelBookingIsSuccessful() throws SelectingSeatsException {
+    void testCancelBookingIsSuccessful() throws SelectingSeatsException {
         canceledSeats = new int[]{3, 4, 5};
         Assertions.assertDoesNotThrow(() -> {
             cinema.cancelBooking(3, 2, canceledSeats);
@@ -28,7 +28,7 @@ class cencelBookingTest {
     }
 
     @Test
-    void cancelBookingUnsuccessful() throws SelectingSeatsException {
+    void testCancelBookingUnsuccessful() throws SelectingSeatsException {
         canceledSeats = new int[]{6, 7, 8};
         assertThrows(SelectingSeatsException.class, () -> {
             cinema.cancelBooking(3, 2, canceledSeats);
@@ -36,7 +36,7 @@ class cencelBookingTest {
     }
 
     @Test
-    void cancelBookingNotAllSeats() throws SelectingSeatsException {
+    void testCancelBookingNotAllSeats() throws SelectingSeatsException {
         canceledSeats = new int[]{5, 7};
         Assertions.assertDoesNotThrow(() -> {
             cinema.cancelBooking(3, 2, canceledSeats);
