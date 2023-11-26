@@ -1,30 +1,36 @@
 package org.example;
 
-import java.sql.SQLOutput;
-
 public class Cinema {
 
     private int[][][] places = new int[5][10][20];
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
-    public static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String RESET = "\033[0m";
+    private static final String ANSI_GREEN = "\u001B[32m";
+    private static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
+    private static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
+    private static final String ANSI_RED = "\u001B[31m";
+    private static final String RESET = "\033[0m";
 
-    public void bookSeats(int hallNumber, int row, int[] seats) {
-
+    public void bookSeats(int hallNumber, int row, int[] seats) throws NotAvailableSeatsException {
+        for (int i = 0; i < seats.length; i++) {
+            if (places[hallNumber][row][seats[i] - 1] == 1) {
+                throw new NotAvailableSeatsException("Seats is already busy");
+            }
+        }
+        for (int i = 0; i < seats.length; i++) {
+            places[hallNumber][row][seats[i]-1]=1;
+        }
     }
 
     public void cancelBooking(int hallNumber, int row, int[] seats) {
 
     }
 
-    public void checkAvailability(int screen, int numSeats) {
+    public void checkAvailability(int hallNumber, int numSeats) {
 
     }
 
-    private void printSearingColumns(int hallNumber) {
+    private void printNumberOfSearchingColumns(int hallNumber) {
         final int seatIndexOffset = 1;
+
         final int rowHeaderOffset = 10;
 
         for (int i = 0; i < places[hallNumber][seatIndexOffset].length; ) {
@@ -43,7 +49,7 @@ public class Cinema {
 
     public void printSeatingArrangement(int hallNumber) {
         int indexOfRow = 1;
-        printSearingColumns(hallNumber);
+        printNumberOfSearchingColumns(hallNumber);
 
         for (int i = 0; i < places[hallNumber].length; i++) {
             if (indexOfRow < 10) {
@@ -60,7 +66,7 @@ public class Cinema {
             }
             System.out.print("| " + indexOfRow++ + "\n");
         }
-        printSearingColumns(hallNumber);
+        printNumberOfSearchingColumns(hallNumber);
 
     }
 
