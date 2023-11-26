@@ -15,18 +15,18 @@ class isBookSeatsAvailableTest {
         cinema= new Cinema();
     }
     @Test
-    void testBookIsAvailable() throws NotAvailableSeatsException{
+    void testBookIsAvailable() throws SelectingSeatsException {
         int [] numberOfSeats= {3,4};
         Assertions.assertDoesNotThrow(() -> {
             cinema.bookSeats(3, 2, numberOfSeats);
         }, "Seats are already busy");
     }
     @Test
-    void testBookIsNotAvailable() throws NotAvailableSeatsException {
+    void testBookIsNotAvailable() throws SelectingSeatsException {
         int [] firstOrder= {3,4,6};
         cinema.bookSeats(3,2,firstOrder);
         int [] secondOrder= {3,4,5};
-        assertThrows(NotAvailableSeatsException.class, () -> {
+        assertThrows(SelectingSeatsException.class, () -> {
             cinema.bookSeats(3,2,secondOrder);
         },"Seats is already busy");
     }
