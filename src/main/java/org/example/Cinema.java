@@ -9,19 +9,28 @@ public class Cinema {
     private static final String ANSI_RED = "\u001B[31m";
     private static final String RESET = "\033[0m";
 
-    public void bookSeats(int hallNumber, int row, int[] seats) throws NotAvailableSeatsException {
+    public void bookSeats(int hallNumber, int row, int[] seats) throws SelectingSeatsException {
         for (int i = 0; i < seats.length; i++) {
-            if (places[hallNumber][row][seats[i] - 1] == 1) {
-                throw new NotAvailableSeatsException("Seats is already busy");
+            if (places[hallNumber-1][row-1][seats[i] - 1] == 1) {
+                throw new SelectingSeatsException("Seats is already busy");
             }
         }
         for (int i = 0; i < seats.length; i++) {
-            places[hallNumber][row][seats[i]-1]=1;
+            places[hallNumber-1][row-1][seats[i] - 1] = 1;
         }
     }
 
-    public void cancelBooking(int hallNumber, int row, int[] seats) {
-
+    public void cancelBooking(int hallNumber, int row, int[] seats) throws SelectingSeatsException {
+        int countOfZero = 0;
+        for (int i = 0; i < seats.length; i++) {
+            if (places[hallNumber-1][row-1][seats[i] - 1] == 0) {
+                countOfZero++;
+                if (countOfZero >= seats.length) {throw new SelectingSeatsException("All selected seats is not busy");}
+            }
+            else {
+                places[hallNumber-1][row-1][seats[i] - 1] = 0;
+            }
+        }
     }
 
     public void checkAvailability(int hallNumber, int numSeats) {
