@@ -1,40 +1,69 @@
 package org.example;
 
 public class Cinema {
-
-    private int[][][] places = new int[5][10][20];
+    private int _hallsAmount = 5;
+    private int _rowsAmount = 10;
+    private int _seatsAmount = 20;
+    private int[][][] places = new int[_hallsAmount][_rowsAmount][_seatsAmount];
     private static final String ANSI_GREEN = "\u001B[32m";
     private static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
     private static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
     private static final String ANSI_RED = "\u001B[31m";
     private static final String RESET = "\033[0m";
 
+    public int get_rowsAmount() {
+        return _rowsAmount;
+    }
+
+    public int get_hallsAmount() {
+        return _hallsAmount;
+    }
+
+    public int get_seatsAmount() {
+        return _seatsAmount;
+    }
+
     public void bookSeats(int hallNumber, int row, int[] seats) throws SelectingSeatsException {
         for (int i = 0; i < seats.length; i++) {
-            if (places[hallNumber-1][row-1][seats[i] - 1] == 1) {
+            if (places[hallNumber - 1][row - 1][seats[i] - 1] == 1) {
                 throw new SelectingSeatsException("Seats is already busy");
             }
         }
         for (int i = 0; i < seats.length; i++) {
-            places[hallNumber-1][row-1][seats[i] - 1] = 1;
+            places[hallNumber - 1][row - 1][seats[i] - 1] = 1;
         }
     }
 
     public void cancelBooking(int hallNumber, int row, int[] seats) throws SelectingSeatsException {
         int countOfZero = 0;
         for (int i = 0; i < seats.length; i++) {
-            if (places[hallNumber-1][row-1][seats[i] - 1] == 0) {
+            if (places[hallNumber - 1][row - 1][seats[i] - 1] == 0) {
                 countOfZero++;
-                if (countOfZero >= seats.length) {throw new SelectingSeatsException("All selected seats is not busy");}
-            }
-            else {
-                places[hallNumber-1][row-1][seats[i] - 1] = 0;
+                if (countOfZero >= seats.length) {
+                    throw new SelectingSeatsException("All selected seats is not busy");
+                }
+            } else {
+                places[hallNumber - 1][row - 1][seats[i] - 1] = 0;
             }
         }
     }
 
-    public void checkAvailability(int hallNumber, int numSeats) {
-
+    public boolean checkAvailability(int hallNumber, int numSeats) {
+        int amountOfAvailableSeats = 0;
+        for (int i = 0; i < places[hallNumber - 1].length; i++) {
+            for (int j = 0; j < places[hallNumber - 1][i].length; j++) {
+                if (places[hallNumber - 1][i][j] == 0 && amountOfAvailableSeats == 0) {
+                    amountOfAvailableSeats++;
+                } else if (places[hallNumber - 1][i][j] == 0 && amountOfAvailableSeats < numSeats) {
+                    amountOfAvailableSeats++;
+                } else if (places[hallNumber - 1][i][j] == 0 && amountOfAvailableSeats == numSeats) {
+                    return true;
+                } else {
+                    amountOfAvailableSeats = 0;
+                }
+            }
+        }
+        return false;
     }
 
     private void printNumberOfSearchingColumns(int hallNumber) {
