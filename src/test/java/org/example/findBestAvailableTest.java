@@ -14,13 +14,14 @@ class findBestAvailableTest {
         {
             cinema.bookSeats(2,i,seats);
         }
+        cinema.printSeatingArrangement(2);
     }
     @Test
     void testFindBestAvailable() throws SelectingSeatsException{
         cinema.cancelBooking(2,4,new int [] {3,4,5});
         cinema.cancelBooking(2,5,new int [] {11,12,13,14});
         cinema.cancelBooking(2,9,new int [] {17,18});
-        cinema.printSeatingArrangement(2);
+
 
 
         assertArrayEquals(new int []{5,11,13},cinema.findBestAvailable(2,3));
