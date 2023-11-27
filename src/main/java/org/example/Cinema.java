@@ -15,57 +15,55 @@ public class Cinema {
         return _rowsAmount;
     }
 
-    public int get_hallsAmount() {
-        return _hallsAmount;
-    }
-
-    public int get_seatsAmount() {
-        return _seatsAmount;
-    }
-
     public void bookSeats(int hallNumber, int row, int[] seats) throws SelectingSeatsException {
+        hallNumber--;
         for (int i = 0; i < seats.length; i++) {
-            if (places[hallNumber - 1][row - 1][seats[i] - 1] == 1) {
+            if (places[hallNumber][row - 1][seats[i] - 1] == 1) {
                 throw new SelectingSeatsException("Seats is already busy");
             }
         }
         for (int i = 0; i < seats.length; i++) {
-            places[hallNumber - 1][row - 1][seats[i] - 1] = 1;
+            places[hallNumber][row - 1][seats[i] - 1] = 1;
         }
     }
 
     public void cancelBooking(int hallNumber, int row, int[] seats) throws SelectingSeatsException {
+        hallNumber--;
         int countOfZero = 0;
         for (int i = 0; i < seats.length; i++) {
-            if (places[hallNumber - 1][row - 1][seats[i] - 1] == 0) {
+            if (places[hallNumber][row - 1][seats[i] - 1] == 0) {
                 countOfZero++;
                 if (countOfZero >= seats.length) {
                     throw new SelectingSeatsException("All selected seats is not busy");
                 }
             } else {
-                places[hallNumber - 1][row - 1][seats[i] - 1] = 0;
+                places[hallNumber][row - 1][seats[i] - 1] = 0;
             }
         }
     }
 
     public boolean checkAvailability(int hallNumber, int numSeats) {
+        hallNumber--;
         int amountOfAvailableSeats = 0;
         for (int i = 0; i < _rowsAmount; i++) {
             for (int j = 0; j < _seatsAmount; j++) {
-                if ((places[hallNumber - 1][i][j] == 0 && amountOfAvailableSeats == 0)
-                        || (places[hallNumber - 1][i][j] == 0 && amountOfAvailableSeats < numSeats)) {
+                if ((places[hallNumber][i][j] == 0 && amountOfAvailableSeats == 0)
+                        || (places[hallNumber][i][j] == 0 && amountOfAvailableSeats < numSeats)) {
                     amountOfAvailableSeats++;
-                } else if (places[hallNumber - 1][i][j] == 0 && amountOfAvailableSeats == numSeats) {
-                    return true;
+                    if (places[hallNumber][i][j] == 0 && amountOfAvailableSeats == numSeats) {
+                        return true;
+                    }
                 } else {
                     amountOfAvailableSeats = 0;
                 }
             }
+            amountOfAvailableSeats = 0;
         }
         return false;
     }
 
     private void printNumberOfSearchingColumns(int hallNumber) {
+        hallNumber--;
         final int seatIndexOffset = 1;
 
         final int rowHeaderOffset = 10;
@@ -86,7 +84,7 @@ public class Cinema {
 
     public void printSeatingArrangement(int hallNumber) {
         int indexOfRow = 1;
-        hallNumber -= 1;
+        hallNumber--;
 
         printNumberOfSearchingColumns(hallNumber);
 
@@ -109,19 +107,20 @@ public class Cinema {
 
     }
 
-    public int[] findBestAvailable(int hallNumber, int numSeats) {
+    public int[] findBestAvailable(int hallNumber, int numSeats) throws SelectingSeatsException {
+        hallNumber--;
         int suborderSeats = 0;
         int maxSuborder = 0;
         int[] result = new int[3]; //first number is row, second is first seat and third is last seat
 
-        if (!checkAvailability(hallNumber, numSeats)) {
-            return result;
+        if (!checkAvailability(hallNumber + 1, numSeats)) {
+            throw new SelectingSeatsException("There are no seats for you");
         }
 
         for (int i = 0; i < _rowsAmount; i++) {
             for (int j = 0; j < _seatsAmount; j++) {
-                if ((places[hallNumber - 1][i][j] == 0 && suborderSeats == 0)
-                        || (places[hallNumber - 1][i][j] == 0 && suborderSeats < _seatsAmount)) {
+                if ((places[hallNumber][i][j] == 0 && suborderSeats == 0)
+                        || (places[hallNumber][i][j] == 0 && suborderSeats < _seatsAmount)) {
                     suborderSeats++;
                     if (suborderSeats > maxSuborder) {
                         maxSuborder = suborderSeats;
@@ -137,5 +136,15 @@ public class Cinema {
         return result;
     }
 
+    public void autoBook(int hallNumber, int numSeats) throws SelectingSeatsException {
+        int[] bestSeatsAllInfo = findBestAvailable(hallNumber, numSeats);
+        int c = bestSeatsAllInfo[2] - bestSeatsAllInfo[1];
+        int[] numberOfSeats = new int[++bestSeatsAllInfo[2] - bestSeatsAllInfo[1]];
+        int numberOfCurrentSeat = --bestSeatsAllInfo[1];
+        for (int i = 0; i < numberOfSeats.length; i++) {
+            numberOfSeats[i] = ++numberOfCurrentSeat;
+        }
+        bookSeats(hallNumber, bestSeatsAllInfo[0], numberOfSeats);
+    }
 
 }
