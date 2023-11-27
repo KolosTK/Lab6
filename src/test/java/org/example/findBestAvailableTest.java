@@ -29,6 +29,8 @@ class findBestAvailableTest {
     @Test
     void testSeatsIsNotAvailable() throws SelectingSeatsException
     {
-     assertArrayEquals(new int[]{0,0,0},cinema.findBestAvailable(2,4));
+        assertThrows(SelectingSeatsException.class, () -> {
+            cinema.findBestAvailable(2,4);
+        },"There are no seats for you");
     }
 }
