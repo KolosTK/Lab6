@@ -50,11 +50,10 @@ public class Cinema {
 
     public boolean checkAvailability(int hallNumber, int numSeats) {
         int amountOfAvailableSeats = 0;
-        for (int i = 0; i < places[hallNumber - 1].length; i++) {
-            for (int j = 0; j < places[hallNumber - 1][i].length; j++) {
-                if (places[hallNumber - 1][i][j] == 0 && amountOfAvailableSeats == 0) {
-                    amountOfAvailableSeats++;
-                } else if (places[hallNumber - 1][i][j] == 0 && amountOfAvailableSeats < numSeats) {
+        for (int i = 0; i < _rowsAmount; i++) {
+            for (int j = 0; j < _seatsAmount; j++) {
+                if ((places[hallNumber - 1][i][j] == 0 && amountOfAvailableSeats == 0)
+                        || (places[hallNumber - 1][i][j] == 0 && amountOfAvailableSeats < numSeats)) {
                     amountOfAvailableSeats++;
                 } else if (places[hallNumber - 1][i][j] == 0 && amountOfAvailableSeats == numSeats) {
                     return true;
@@ -87,14 +86,16 @@ public class Cinema {
 
     public void printSeatingArrangement(int hallNumber) {
         int indexOfRow = 1;
+        hallNumber -= 1;
+
         printNumberOfSearchingColumns(hallNumber);
 
-        for (int i = 0; i < places[hallNumber].length; i++) {
+        for (int i = 0; i < _rowsAmount; i++) {
             if (indexOfRow < 10) {
                 System.out.print(" ");
             }
             System.out.print(indexOfRow + " |");
-            for (int j = 0; j < places[hallNumber][i].length; j++) {
+            for (int j = 0; j < _seatsAmount; j++) {
                 if (places[hallNumber][i][j] != 0) {
                     System.out.print(ANSI_RED + ANSI_YELLOW_BACKGROUND + " " + places[hallNumber][i][j] + " " + RESET);
 
@@ -106,6 +107,34 @@ public class Cinema {
         }
         printNumberOfSearchingColumns(hallNumber);
 
+    }
+
+    public int[] findBestAvailable(int hallNumber, int numSeats) {
+        int suborderSeats = 0;
+        int maxSuborder = 0;
+        int[] result = new int[3]; //first number is row, second is first seat and third is last seat
+
+        if (!checkAvailability(hallNumber, numSeats)) {
+            return result;
+        }
+
+        for (int i = 0; i < _rowsAmount; i++) {
+            for (int j = 0; j < _seatsAmount; j++) {
+                if ((places[hallNumber - 1][i][j] == 0 && suborderSeats == 0)
+                        || (places[hallNumber - 1][i][j] == 0 && suborderSeats < _seatsAmount)) {
+                    suborderSeats++;
+                    if (suborderSeats > maxSuborder) {
+                        maxSuborder = suborderSeats;
+                        result[0] = i + 1; // initialize row
+                        result[1] = j + 1 - suborderSeats + 1; //initialize index of first element
+                    }
+                } else {
+                    suborderSeats = 0;
+                }
+            }
+        }
+        result[2] = result[1] + numSeats - 1;
+        return result;
     }
 
 
